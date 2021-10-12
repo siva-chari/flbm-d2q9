@@ -34,6 +34,7 @@ dt = 1.0
 dx =  1.0
 mp = 1.0
 gamma = 0.75
+nStepsThermalize = 10000
 
 rhor = np.zeros((lx,ly))
 ux = np.zeros((lx,ly))
@@ -154,7 +155,10 @@ def get_fi(lmda,rhor,fx,fy,gamma,cs):
 				fi[i,j,k] = wi[k]*(trm1x + trm1y)
 	#
 	return fi
-					
+
+# update rule, for ni. the flbm rule.
+def update_ni_flbm(ni,ni_eq,gammaa,lx,ly,cs,cxi,cyi,wi):
+	
 					
 #==========================================================#
 #=======  main program here ===============================#
@@ -165,5 +169,10 @@ def get_fi(lmda,rhor,fx,fy,gamma,cs):
 [rhor,ux,uy] = get_rho_u(ni,cxi,cyi,wi,lx,ly,mu,cs)
 ni_eq = calc_ni_eq(rhor,ux,uy,cs,lx,ly,wi)
 
+# initial free evolution/ thermalization.
+for itr in range(nStepsThermalize):
+	for i in range(lx):
+		for j in range(ly):
+			
 
 
