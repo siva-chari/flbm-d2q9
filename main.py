@@ -47,6 +47,7 @@ fi = np.zeros((lx, ly, 9))
 xi = np.zeros(9)
 uxloc = np.zeros((lx, ly))
 uyloc = np.zeros((lx, ly))
+phi_lmda = np.zeros((lx,ly))
 
 
 out_work_file = "workValues.dat" 	# This data file consists of the work ensemble, for a given Tau.
@@ -56,8 +57,31 @@ out_work_file = "workValues.dat" 	# This data file consists of the work ensemble
 #=======  functions here ==================================#
 #==========================================================#
 
-
-
+def initialize_ni(lx,ly,n,lmda,wi,mu,cs):
+	#
+	# first we need to obtain the phi_sum.
+	# for initialization purpose.
+	#
+	phi_sum = 0.0
+	for i in range(lx):
+		for j in range(ly):
+			phi_lmda[i,j] = lmda*A*(np.cos(2.0*np.pi*i/lx) + 1.0)
+			phi_sum = phi_sum + phi_lmda[i,j]
+	#
+	# kB T = mu * cs^2. ==> bta = 1.0/(kB*T)
+	#
+	cs2 = cs**2.0
+	bta = 1.0/(mu*cs2)
+	for i in range(lx):
+		for j in range(ly):
+			rhor[i,j] = np.exp(-bta*phi_lmda[i,j])/(phi_sum) * n*lx*ly
+			#
+			# now we can initialize ni. by using the weights, wi.
+			for k in range(9):
+				ni[i,j,k] = rhor[i,j]*wi[k]
+				
+	
+			
 
 
 
