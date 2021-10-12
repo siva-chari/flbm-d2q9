@@ -114,8 +114,56 @@ def calc_ni_eq(rhor,ux,uy,cs,lx,ly,wi):
 				udotc2 = udotc*udotc
 				#
 				ni_eq[i,j,k] = rhor[i,j]*wi[k]*(1.0 + udotc/cs2 + udotc2/(2.0*cs4) - u2/(2.0*cs2))
-												
-												
+	#
+	return ni_eq
+
+# calculate the force vector. fx,fy.
+def calc_force_vector(lmda,lx,ly):
+	for i in range(lx):
+		for j in range(ly):
+			fx[i,j] = -(2.0*np.pi*lmda*A/lx)*(np.sin(2.0*np.pi*i/lx))
+			fy[i,j] = 0.0
+	#
+	return [fx,fy]
+
+# calculate the force term, fi.
+def get_fi(lmda,rhor,fx,fy,gamma,cs):
+	fx = np.zeros((lx,ly))
+	fy = np.zeros((lx,ly))
+	#
+	cs2 = cs**2.0
+	cs4 = cs**4.0
+	for i in range(lx):
+		for j in range(ly):
+			uxloc[i,j] = ux[i,j] + fx[i,j]
+			uyloc[i.j] = uy[i,j] + fy[i,j]
+			for k in range(9):
+				udotc = uxloc[i,j]*cxi[k] + uyloc[i,j]*cyi[k]
+				t1x = cxi[k]/cs2
+				t2x = 0.5*(1.0+gamma)
+				t3x = (udotc/cs4)*cxi[k]
+				t4x = ux[i,j]/cs2
+				trm1x = (t1x + t2x*(t3x - t4x))*fx[i,j]
+				#
+				t1y = cyi[k]/cs2
+				t2y = 0.5*(1.0+gamma)
+				t3y = (udotc/cs4)*cyi[k]
+				t4y = uy[i,j]/cs2
+				trm1y = (t1y + t2y*(t3y - t4y))*fy[i,j]
+				#
+				fi[i,j,k] = wi[k]*(trm1x + trm1y)
+	#
+	return fi
+					
+					
 #==========================================================#
 #=======  main program here ===============================#
 #==========================================================#
+
+# initialize the system, i.e., ni values.
+[ni, rhor] = initialize_ni(lx,ly,n,lmda,wi,mu,cs)
+[rhor,ux,uy] = get_rho_u(ni,cxi,cyi,wi,lx,ly,mu,cs)
+ni_eq = calc_ni_eq(rhor,ux,uy,cs,lx,ly,wi)
+
+
+
