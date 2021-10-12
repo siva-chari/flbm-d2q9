@@ -57,6 +57,8 @@ out_work_file = "workValues.dat" 	# This data file consists of the work ensemble
 #=======  functions here ==================================#
 #==========================================================#
 
+# to initialize the ni values.
+
 def initialize_ni(lx,ly,n,lmda,wi,mu,cs):
 	#
 	# first we need to obtain the phi_sum.
@@ -80,8 +82,11 @@ def initialize_ni(lx,ly,n,lmda,wi,mu,cs):
 			for k in range(9):
 				ni[i,j,k] = rhor[i,j]*wi[k]
 				
+	return [ni,rhor]
+
+# calculate the rho and u, from ni.
+def get_rho_u(ni,wi,lx,ly,mu,cs):
 	
-			
 
 
 
