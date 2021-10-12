@@ -85,11 +85,37 @@ def initialize_ni(lx,ly,n,lmda,wi,mu,cs):
 	return [ni,rhor]
 
 # calculate the rho and u, from ni.
-def get_rho_u(ni,wi,lx,ly,mu,cs):
-	
+def get_rho_u(ni,cxi,cyi,wi,lx,ly,mu,cs):
+	for i in range(lx):
+		for j in range(ly):
+			nsum = 0.0
+			# for density.
+			for k in range(9):
+				nsum = nsum + ni[i,j,k]
+				uxsum = uxsum + ni[i,j,k]*cxi[k]
+				uysum = uysum + ni[i,j,k]*cyi[k]
+			rhor[i,j] = nsum
+			# for velocity.
+			ux[i,j] = uxsum/rhor[i,j]
+			uy[i,j] = uysum/rhor[i,j]
+			#
+	return [rhor,ux,uy]
 
-
-
+# calculate the equilibrium distribution.
+def calc_ni_eq(rhor,ux,uy,cs,lx,ly,wi):
+	cs2 = cs**2.0
+	cs4 = cs**4.0
+	#
+	for i in range(lx):
+		for j in range(ly):
+			u2 = ux[i,j]**2.0 + uy[i,j]**2.0
+			for k in range(9):
+				udotc = ux[i,j]*cxi[k] + uy[i,j]*cyi[k]
+				udotc2 = udotc*udotc
+				#
+				ni_eq[i,j,k] = rhor[i,j]*wi[k]*(1.0 + udotc/cs2 + udotc2/(2.0*cs4) - u2/(2.0*cs2))
+												
+												
 #==========================================================#
 #=======  main program here ===============================#
 #==========================================================#
